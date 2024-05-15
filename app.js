@@ -14,9 +14,9 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(logger("combined"));
 
-app.get("/", (req, res) => {
-    res.send("Página inicial");
-});
+const userRoute = require('./src/routes/userRouter');
+
+app.use('/users', userRoute);
 
 function normalizePort(val) {
     const port = parseInt(val, 10);
