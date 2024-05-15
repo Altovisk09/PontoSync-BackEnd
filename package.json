@@ -18,5 +18,9 @@
     "jsonwebtoken": "^9.0.2",
     "jspdf": "^2.5.1",
     "pdfreader": "^3.0.2"
+  },
+  "devDependencies": {
+    "morgan": "^1.10.0",
+    "nodemon": "^3.1.0"
   }
 }
