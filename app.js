@@ -15,16 +15,16 @@ app.use(cookieParser());
 app.use(logger("combined"));
 
 const authRoutes = require('./src/routes/authRoutes');
-const userRoutes = require('./src/routes/userRoutes');
-const employeeRoutes = require('./src/routes/employeeRoutes');
-const reportRoutes = require('./src/routes/reportRoutes');
-const agencyRoutes = require('./src/routes/agencyRoutes');
+// const userRoutes = require('./src/routes/userRoutes');
+// const employeeRoutes = require('./src/routes/employeeRoutes');
+// const reportRoutes = require('./src/routes/reportRoutes');
+// const agencyRoutes = require('./src/routes/agencyRoutes');
 
-app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/employees', employeeRoutes);
-app.use('/api/reports', reportRoutes);
-app.use('/api/agencies', agencyRoutes);
+app.use('/', authRoutes);
+// app.use('/api/users', userRoutes);
+// app.use('/api/employees', employeeRoutes);
+// app.use('/api/reports', reportRoutes);
+// app.use('/api/agencies', agencyRoutes);
 
 function normalizePort(val) {
     const port = parseInt(val, 10);
