@@ -1,5 +1,5 @@
-const { initializeApp } = require("firebase/app");
-const { getFirestore, onSnapshot } = require("firebase/firestore");
+const { initializeApp } = require("firebase-admin");
+const { getFirestore } = require("firebase-admin/firestore");
 const { config } = require("dotenv");
 
 config();
