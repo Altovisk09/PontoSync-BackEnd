@@ -4,16 +4,21 @@
     const jwt = require("jsonwebtoken")
     const logger = require("morgan");
     const initializeFirebase = require("./src/config/firebase/config")
-     
+    
     const app = express();
 
     dotenv.config();
     initializeFirebase()
 
+
+    const verificateToken = require('./src/middlewares/validateToken'); 
+
+
     app.use(express.urlencoded({ extended: false }));
     app.use(express.json());
     app.use(cookieParser());
     app.use(logger("combined"));
+    app.use(verificateToken);
 
     const authRoutes = require('./src/routes/authRoutes');
     // const userRoutes = require('./src/routes/userRoutes');

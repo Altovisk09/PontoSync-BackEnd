@@ -1,5 +1,7 @@
 const { getAuth } = require("firebase-admin/auth");
 const { getFirestore } = require('firebase-admin/firestore');
+const jwt = require('jsonwebtoken')
+const crypto = require('crypto');
 
 class Users {
     constructor(name, last_name, phone_number, security_question, response) {
@@ -25,7 +27,7 @@ class Users {
             const userId = userRecord.uid;
             
             await this.addToFireStore(userId);
-            
+
             console.log('Usuário criado com sucesso!');
             return; // Retorne o ID do usuário criado
         } catch (error) {
@@ -36,7 +38,7 @@ class Users {
     async addToFireStore(userId) {
         try{
             const db = getFirestore();
-        const userRef = db.collection("users").doc(userId);
+            const userRef = db.collection("users").doc(userId);
 
         await userRef.set({
             name: this.name,
@@ -49,6 +51,21 @@ class Users {
         console.log('Informações do usuario adicionadas ao Firestore!')
         }catch(error){
             console.error('Erro ao adicionar informações do usuário ao Firestore:', error);
+        }
+    }
+    async login(idToken) {
+        try {
+            const decodedToken = await getAuth().verifyIdToken(idToken);
+            if (decodedToken) {
+                const randomToken = crypto.randomBytes(16).toString('hex');
+                const token = jwt.sign({ token: randomToken }, JWT_SECRET, { expiresIn: '1h' });
+                return token;
+            } else {
+                throw new Error('Token inválido');
+            }
+        } catch (error) {
+            console.error('Erro ao verificar o ID Token:', error);
+            throw error;
         }
     }
 }

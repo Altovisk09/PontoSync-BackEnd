@@ -11,7 +11,18 @@ async function createUser(req, res) {
         res.status(500).send('Erro ao criar usuário');
     }
 }
+async function login(req, res) {
+    const { idToken } = req.body;
+
+    try {
+        const token = await Users.login(idToken);
+        res.status(200).json({ token });
+    } catch (error) {
+        res.status(401).send({ message: 'Erro ao autenticar usuário', error: error.message });
+    }
+}
 
 module.exports = {
-    createUser
+    createUser,
+    login
 };
