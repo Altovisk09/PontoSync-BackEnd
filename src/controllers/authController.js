@@ -1,4 +1,5 @@
 const Users = require('../models/Users');
+const SecurityQuestions = require('../models/SecurityQuestions');
 
 async function createUser(req, res) {
     const { name, last_name, email, password, phone_number, security_question, response } = req.body;
@@ -22,7 +23,43 @@ async function login(req, res) {
     }
 }
 
+async function addSecurityQuestion (req, res) {
+    try {
+        const { questionText } = req.body;
+        const newQuestion = await SecurityQuestions.addQuestion(questionText);
+        res.status(200).json({ newQuestion });
+    } catch (error) {
+        console.error('Erro ao adicionar pergunta de segurança:', error);
+        res.status(500).json({ error: 'Erro ao adicionar pergunta de segurança.' });
+    }
+};
+
+async function removeSecurityQuestion(req, res)  {
+    try {
+        const { questionId } = req.params;
+        const success = await SecurityQuestions.removeQuestion(questionId);
+        res.status(200).json({ success });
+    } catch (error) {
+        console.error('Erro ao remover pergunta de segurança:', error);
+        res.status(500).json({ error: 'Erro ao remover pergunta de segurança.' });
+    }
+};
+
+async function listSecurityQuestions(req, res) {
+    try {
+        const questions = await SecurityQuestions.listQuestions();
+        res.json(questions);
+    } catch (error) {
+        console.error('Erro ao listar perguntas de segurança:', error);
+        res.status(500).json({ error: 'Erro ao listar perguntas de segurança.' });
+    }
+};
+
+
 module.exports = {
     createUser,
-    login
+    login,
+    addSecurityQuestion,
+    removeSecurityQuestion,
+    listSecurityQuestions
 };
