@@ -18,7 +18,7 @@
     app.use(express.json());
     app.use(cookieParser());
     app.use(logger("combined"));
-    app.use(verificateToken);
+    // app.use(verificateToken);
 
     const authRoutes = require('./src/routes/authRoutes');
     // const userRoutes = require('./src/routes/userRoutes');

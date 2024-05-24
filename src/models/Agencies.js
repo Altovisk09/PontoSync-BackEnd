@@ -1,14 +1,15 @@
-const { collection, addDoc, deleteDoc, doc, getDocs } = require('firebase/firestore');
+const { getFirestore } = require('firebase-admin/firestore');
 
 class Agencies {
     constructor() {
-        this.agenciesCollectionRef = collection('agencies');
+        this.db = getFirestore();
+        this.agenciesCollectionRef = this.db.collection('agencies');
     }
 
-    async addAgency(name) {
+    async addAgency(name, responsaveis) {
         try {
-            const newAgency = { name };
-            const docRef = await addDoc(this.agenciesCollectionRef, newAgency);
+            const newAgency = { name, responsaveis };
+            const docRef = await this.agenciesCollectionRef.add(newAgency);
             return { id: docRef.id, ...newAgency };
         } catch (error) {
             console.error("Erro ao adicionar agência: ", error);
@@ -18,21 +19,17 @@ class Agencies {
 
     async removeAgency(agencyId) {
         try {
-            const agencyDocRef = doc(this.agenciesCollectionRef, agencyId);
-            const responsiblesCollectionRef = collection(agencyDocRef, 'responsaveis');
-            const responsiblesSnapshot = await getDocs(responsiblesCollectionRef);
-            responsiblesSnapshot.forEach(async (responsibleDoc) => {
-                await deleteDoc(doc(responsiblesCollectionRef, responsibleDoc.id));
-            });
-            await deleteDoc(agencyDocRef);
+            await this.agenciesCollectionRef.doc(agencyId).delete();
+            return true;
         } catch (error) {
             console.error("Erro ao remover agência: ", error);
+            return false;
         }
     }
 
     async listAgencies() {
         try {
-            const querySnapshot = await getDocs(this.agenciesCollectionRef);
+            const querySnapshot = await this.agenciesCollectionRef.get();
             const agencies = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             return agencies;
         } catch (error) {
@@ -41,40 +38,29 @@ class Agencies {
         }
     }
 
-    async addColaborator(agencyId, name, number, email) {
+    async addResponsavel(agencyId, responsavelData) {
         try {
-            const agencyDocRef = doc(this.agenciesCollectionRef, agencyId);
-            const responsiblesCollectionRef = collection(agencyDocRef, 'responsaveis');
-            const newColaborator = { name, number, email };
-            const docRef = await addDoc(responsiblesCollectionRef, newColaborator);
-            return { id: docRef.id, ...newColaborator };
+            await this.agenciesCollectionRef.doc(agencyId).update({
+                responsaveis: getFirestore.FieldValue.arrayUnion(responsavelData)
+            });
+            return true;
         } catch (error) {
-            console.error("Erro ao adicionar colaborador: ", error);
-            return null;
+            console.error("Erro ao adicionar responsável: ", error);
+            return false;
         }
     }
 
-    async removeColaborator(agencyId, colaboratorId) {
+    async removeResponsavel(agencyId, responsavelData) {
         try {
-            const agencyDocRef = doc(this.agenciesCollectionRef, agencyId);
-            const responsiblesCollectionRef = collection(agencyDocRef, 'responsaveis');
-            await deleteDoc(doc(responsiblesCollectionRef, colaboratorId));
+            await this.agenciesCollectionRef.doc(agencyId).update({
+                responsaveis: getFirestore.FieldValue.arrayRemove(responsavelData)
+            });
+            return true;
         } catch (error) {
-            console.error("Erro ao remover colaborador: ", error);
-        }
-    }
-
-    async listColaborators(agencyId) {
-        try {
-            const agencyDocRef = doc(this.agenciesCollectionRef, agencyId);
-            const responsiblesCollectionRef = collection(agencyDocRef, 'responsaveis');
-            const querySnapshot = await getDocs(responsiblesCollectionRef);
-            const responsibles = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            return responsibles;
-        } catch (error) {
-            console.error("Erro ao listar colaboradores: ", error);
-            return [];
+            console.error("Erro ao remover responsável: ", error);
+            return false;
         }
     }
 }
+
 module.exports = Agencies;

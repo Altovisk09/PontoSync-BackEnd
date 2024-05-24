@@ -1,66 +1,61 @@
-const { collection, addDoc, doc, updateDoc, deleteDoc, getDocs } = require('firebase/firestore');
+const { getFirestore } = require('firebase-admin/firestore');
 
 class EmployeeManager {
     constructor() {
-        this.employeeCollectionRef = collection('employee');
+        this.db = getFirestore();
+        this.employeeCollectionRef = this.db.collection('employees');
     }
 
     async addEmployee(employeeData) {
         try {
-            const docRef = await addDoc(this.employeeCollectionRef, employeeData);
-            return { id: docRef.id, ...employeeData };
+            const res = await this.employeeCollectionRef.add(employeeData);
+            return res.id;
         } catch (error) {
-            console.error("Erro ao adicionar funcionário: ", error);
-            return null;
+            throw new Error('Erro ao adicionar funcionário: ' + error.message);
         }
     }
 
-    async updateEmployee(employeeId, employeeData) {
+    async getEmployeeById(employeeId) {
         try {
-            const employeeDocRef = doc(this.employeeCollectionRef, employeeId);
-            await updateDoc(employeeDocRef, employeeData);
-            return { id: employeeId, ...employeeData };
+            const doc = await this.employeeCollectionRef.doc(employeeId).get();
+            if (doc.exists) {
+                return doc.data();
+            } else {
+                throw new Error('Funcionário não encontrado');
+            }
         } catch (error) {
-            console.error("Erro ao atualizar funcionário: ", error);
-            return null;
+            throw new Error('Erro ao buscar funcionário: ' + error.message);
+        }
+    }
+
+    async updateEmployee(employeeId, updatedData) {
+        try {
+            await this.employeeCollectionRef.doc(employeeId).update(updatedData);
+            return true;
+        } catch (error) {
+            throw new Error('Erro ao atualizar funcionário: ' + error.message);
         }
     }
 
     async deleteEmployee(employeeId) {
         try {
-            const employeeDocRef = doc(this.employeeCollectionRef, employeeId);
-            await deleteDoc(employeeDocRef);
+            await this.employeeCollectionRef.doc(employeeId).delete();
             return true;
         } catch (error) {
-            console.error("Erro ao excluir funcionário: ", error);
-            return false;
+            throw new Error('Erro ao deletar funcionário: ' + error.message);
         }
     }
 
-    async listEmployees() {
+    async getAllEmployees() {
         try {
-            const querySnapshot = await getDocs(this.employeeCollectionRef);
-            const employees = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            const snapshot = await this.employeeCollectionRef.get();
+            const employees = [];
+            snapshot.forEach(doc => {
+                employees.push({ id: doc.id, ...doc.data() });
+            });
             return employees;
         } catch (error) {
-            console.error("Erro ao listar funcionários: ", error);
-            return [];
-        }
-    }
-
-    async getEmployee(employeeId) {
-        try {
-            const employeeDocRef = doc(this.employeeCollectionRef, employeeId);
-            const employeeSnapshot = await getDoc(employeeDocRef);
-            if (employeeSnapshot.exists()) {
-                return { id: employeeSnapshot.id, ...employeeSnapshot.data() };
-            } else {
-                console.error("Funcionário não encontrado");
-                return null;
-            }
-        } catch (error) {
-            console.error("Erro ao obter funcionário: ", error);
-            return null;
+            throw new Error('Erro ao buscar todos os funcionários: ' + error.message);
         }
     }
 }

@@ -5,6 +5,8 @@ const { addEmployee, updateEmployee, deleteEmployee, listEmployees, getEmployee 
 router.route('/')
     .get(listEmployees)
     .post(addEmployee)
+
+router.route('/:employeeId')    
     .put(updateEmployee)
     .delete(deleteEmployee)
 
