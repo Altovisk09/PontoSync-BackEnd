@@ -1,4 +1,4 @@
-const EmployeeManager = require('./EmployeeManager');
+const EmployeeManager = require('../models/Employees');
 
 const employeeManager = new EmployeeManager();
 
