@@ -6,9 +6,9 @@ class Agencies {
         this.agenciesCollectionRef = this.db.collection('agencies');
     }
 
-    async addAgency(name, responsaveis) {
+    async addAgency(name) {
         try {
-            const newAgency = { name, responsaveis };
+            const newAgency = { name, responsaveis: [] };
             const docRef = await this.agenciesCollectionRef.add(newAgency);
             return { id: docRef.id, ...newAgency };
         } catch (error) {

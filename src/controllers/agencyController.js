@@ -35,4 +35,21 @@ const listAgencies = async (req, res) => {
     }
 };
 
+const addRep = async (req, res) => {
+    try {
+        const {name, number, email} = req.body;
+
+        const repData = {
+            name: name ,
+            number: number,
+            email: email
+        };
+
+        await agencies.addResponsavel(repData)
+        res.status(200).json({message: `Funcionario ${name} adicionado com sucesso`})
+
+    }catch(error){
+        res.status(500).json({ error: 'Erro ao adicionar responsável da agencia.' });
+    }
+}
 module.exports = { addAgency, removeAgency, listAgencies };
