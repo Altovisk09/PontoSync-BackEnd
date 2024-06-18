@@ -1,17 +1,17 @@
     const express = require("express");
     const cookieParser = require("cookie-parser");
     const dotenv = require("dotenv");
-    const jwt = require("jsonwebtoken")
+    const jwt = require("jsonwebtoken");
     const logger = require("morgan");
-    const initializeFirebase = require("./src/config/firebase/config")
+    const initializeFirebase = require("./src/config/firebase/config");
     
     const app = express();
 
     dotenv.config();
-    initializeFirebase()
+    initializeFirebase();
 
 
-    const verificateToken = require('./src/middlewares/validateToken'); 
+    const verificateToken = require('./src/middlewares/validateToken');
 
 
     app.use(express.urlencoded({ extended: false }));
