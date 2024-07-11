@@ -4,7 +4,7 @@ const SecurityQuestions = require('../models/SecurityQuestions');
 async function createUser(req, res) {
     const { name, last_name, email, password, phone_number, security_question, response } = req.body;
     const user = new Users();
-    
+
     try {
         await user.createNewUser(email, password, name, last_name, phone_number, security_question, response);
         res.status(200).send('Usuário criado com sucesso!');
@@ -16,14 +16,14 @@ async function login(req, res) {
     const { idToken } = req.body;
 
     try {
-        const token = await Users.login(idToken);
-        res.status(200).json({ token });
+        const { token, userData } = await Users.login(idToken);
+        res.status(200).json({ token, userData });
     } catch (error) {
         res.status(401).send({ message: 'Erro ao autenticar usuário', error: error.message });
     }
 }
 
-async function addSecurityQuestion (req, res) {
+async function addSecurityQuestion(req, res) {
     try {
         const { questionText } = req.body;
         const newQuestion = await SecurityQuestions.addQuestion(questionText);
@@ -34,7 +34,7 @@ async function addSecurityQuestion (req, res) {
     }
 };
 
-async function removeSecurityQuestion(req, res)  {
+async function removeSecurityQuestion(req, res) {
     try {
         const { questionId } = req.params;
         const success = await SecurityQuestions.removeQuestion(questionId);

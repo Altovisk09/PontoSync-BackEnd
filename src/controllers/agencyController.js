@@ -52,4 +52,4 @@ const addRep = async (req, res) => {
         res.status(500).json({ error: 'Erro ao adicionar responsável da agencia.' });
     }
 }
-module.exports = { addAgency, removeAgency, listAgencies };
+module.exports = { addAgency, removeAgency, listAgencies, addRep };

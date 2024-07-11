@@ -60,7 +60,17 @@ class Users {
             if (decodedToken) {
                 const randomToken = crypto.randomBytes(16).toString('hex');
                 const token = jwt.sign({ token: randomToken }, process.env.JWT_SECRET, { expiresIn: '1h' });
-                return token;
+
+                // Buscar dados do usuário na Firestore
+                const userId = decodedToken.uid;
+                const userDoc = await this.usersCollectionRef.doc(userId).get();
+
+                if (!userDoc.exists) {
+                    throw new Error('Usuário não encontrado');
+                }
+
+                const userData = userDoc.data();
+                return { token, userData };
             } else {
                 throw new Error('Token inválido');
             }
