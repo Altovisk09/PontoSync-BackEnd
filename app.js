@@ -4,6 +4,7 @@
     const jwt = require("jsonwebtoken");
     const logger = require("morgan");
     const initializeFirebase = require("./src/config/firebase/config");
+    const cors = require('cors');
     
     const app = express();
 
@@ -12,12 +13,16 @@
 
 
     const verificateToken = require('./src/middlewares/validateToken');
-
+    const corsOptions = {
+        origin: 'http://localhost:5173',
+        credentials: true,
+      };
 
     app.use(express.urlencoded({ extended: false }));
     app.use(express.json());
     app.use(cookieParser());
     app.use(logger("combined"));
+    app.use(cors(corsOptions));
     // app.use(verificateToken);
 
     const authRoutes = require('./src/routes/authRoutes');
