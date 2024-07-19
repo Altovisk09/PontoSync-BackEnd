@@ -15,7 +15,7 @@
     const verificateToken = require('./src/middlewares/validateToken');
     const corsOptions = {
         origin: 'http://localhost:5173',
-        credentials: true,
+        credentials: false,
       };
 
     app.use(express.urlencoded({ extended: false }));
