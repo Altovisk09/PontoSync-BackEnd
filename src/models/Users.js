@@ -69,7 +69,12 @@ class Users {
                     throw new Error('Usuário não encontrado');
                 }
 
-                const userData = userDoc.data();
+                const userData = {
+                    ...userDoc.data(),
+                    email: decodedToken.email,
+                    uid: decodedToken.uid
+                };
+                
                 return { token, userData };
             } else {
                 throw new Error('Token inválido');

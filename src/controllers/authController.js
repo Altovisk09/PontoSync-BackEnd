@@ -15,7 +15,6 @@ async function createUser(req, res) {
 async function login(req, res) {
     const user = new Users();
     const { idToken } = req.body;
-    console.log(idToken)
     try {
         const { token, userData } = await user.login(idToken);
         res.status(200).json({ token, userData });
@@ -52,7 +51,7 @@ async function listSecurityQuestions(req, res) {
     try {
         const questions = new SecurityQuestions();
         const questionsList = await questions.listQuestions();
-        res.json(questions);
+        res.json(questionsList);
     } catch (error) {
         console.error('Erro ao listar perguntas de segurança:', error);
         res.status(500).json({ error: 'Erro ao listar perguntas de segurança.' });
