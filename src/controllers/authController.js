@@ -13,10 +13,11 @@ async function createUser(req, res) {
     }
 }
 async function login(req, res) {
+    const user = new Users();
     const { idToken } = req.body;
-
+    console.log(idToken)
     try {
-        const { token, userData } = await Users.login(idToken);
+        const { token, userData } = await user.login(idToken);
         res.status(200).json({ token, userData });
     } catch (error) {
         res.status(401).send({ message: 'Erro ao autenticar usuário', error: error.message });
@@ -25,8 +26,9 @@ async function login(req, res) {
 
 async function addSecurityQuestion(req, res) {
     try {
+        const questions = new SecurityQuestions();
         const { questionText } = req.body;
-        const newQuestion = await SecurityQuestions.addQuestion(questionText);
+        const newQuestion = await questions.addQuestion(questionText);
         res.status(200).json({ newQuestion });
     } catch (error) {
         console.error('Erro ao adicionar pergunta de segurança:', error);
@@ -36,8 +38,9 @@ async function addSecurityQuestion(req, res) {
 
 async function removeSecurityQuestion(req, res) {
     try {
+        const questions = new SecurityQuestions();
         const { questionId } = req.params;
-        const success = await SecurityQuestions.removeQuestion(questionId);
+        const success = await questions.removeQuestion(questionId);
         res.status(200).json({ success });
     } catch (error) {
         console.error('Erro ao remover pergunta de segurança:', error);
@@ -47,7 +50,8 @@ async function removeSecurityQuestion(req, res) {
 
 async function listSecurityQuestions(req, res) {
     try {
-        const questions = await SecurityQuestions.listQuestions();
+        const questions = new SecurityQuestions();
+        const questionsList = await questions.listQuestions();
         res.json(questions);
     } catch (error) {
         console.error('Erro ao listar perguntas de segurança:', error);

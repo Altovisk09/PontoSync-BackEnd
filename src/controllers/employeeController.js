@@ -1,9 +1,8 @@
 const EmployeeManager = require('../models/Employees');
 
-const employeeManager = new EmployeeManager();
-
 const addEmployee = async (req, res) => {
     try {
+        const employeeManager = new EmployeeManager();
         const employeeData = req.body;
         const newEmployee = await employeeManager.addEmployee(employeeData);
         res.json(newEmployee);
@@ -15,6 +14,7 @@ const addEmployee = async (req, res) => {
 
 const updateEmployee = async (req, res) => {
     try {
+        const employeeManager = new EmployeeManager();
         const { employeeId } = req.params;
         const employeeData = req.body;
         const updatedEmployee = await employeeManager.updateEmployee(employeeId, employeeData);
@@ -31,6 +31,7 @@ const updateEmployee = async (req, res) => {
 
 const deleteEmployee = async (req, res) => {
     try {
+        const employeeManager = new EmployeeManager();
         const { employeeId } = req.params;
         const success = await employeeManager.deleteEmployee(employeeId);
         if (success) {
@@ -46,6 +47,7 @@ const deleteEmployee = async (req, res) => {
 
 const listEmployees = async (req, res) => {
     try {
+        const employeeManager = new EmployeeManager();
         const employees = await employeeManager.listEmployees();
         res.json(employees);
     } catch (error) {
@@ -56,6 +58,7 @@ const listEmployees = async (req, res) => {
 
 const getEmployee = async (req, res) => {
     try {
+        const employeeManager = new EmployeeManager();
         const { employeeId } = req.params;
         const employee = await employeeManager.getEmployee(employeeId);
         if (employee) {

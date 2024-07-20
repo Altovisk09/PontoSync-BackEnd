@@ -1,9 +1,8 @@
 const Agencies = require('../models/Agencies');
 
-const agencies = new Agencies();
-
 const addAgency = async (req, res) => {
     try {
+        const agencies = new Agencies();
         const { name } = req.body;
         const newAgency = await agencies.addAgency(name);
         res.json(newAgency);
@@ -14,6 +13,7 @@ const addAgency = async (req, res) => {
 
 const removeAgency = async (req, res) => {
     try {
+        const agencies = new Agencies();
         const { agencyId } = req.params;
         const success = await agencies.removeAgency(agencyId);
         if (success) {
@@ -28,6 +28,7 @@ const removeAgency = async (req, res) => {
 
 const listAgencies = async (req, res) => {
     try {
+        const agencies = new Agencies();
         const allAgencies = await agencies.listAgencies();
         res.json(allAgencies);
     } catch (error) {
@@ -37,6 +38,7 @@ const listAgencies = async (req, res) => {
 
 const addRep = async (req, res) => {
     try {
+        const agencies = new Agencies();
         const {name, number, email} = req.body;
 
         const repData = {
