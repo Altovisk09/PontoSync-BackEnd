@@ -57,6 +57,7 @@ class Users {
     async login(idToken) {
         try {
             const decodedToken = await getAuth().verifyIdToken(idToken);
+            console.log('decoded token '+decodedToken)
             if (decodedToken) {
                 const randomToken = CryptoJS.lib.WordArray.random(16).toString();
                 const token = jwt.sign({ token: randomToken }, process.env.JWT_SECRET, { expiresIn: '1h' });
@@ -74,7 +75,7 @@ class Users {
                 };
 
                 const encryptedUserId = CryptoJS.AES.encrypt(userId, process.env.CRYPTO_SECRET).toString();
-
+                console.log('criptografado'+encryptedUserId)
                 const combinedToken = `${token}:${encryptedUserId}`;
 
                 return { combinedToken, userData };
