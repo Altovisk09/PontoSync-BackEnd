@@ -22,6 +22,7 @@ async function login(req, res) {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             maxAge: rememberMe ? 1000 * 60 * 60 * 24 * 30 : 1000 * 60 * 60,
+            sameSite: 'Lax'
         });
 
         res.status(200).json({ userData });
