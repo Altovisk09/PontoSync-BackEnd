@@ -61,7 +61,7 @@ class Users {
                 const randomToken = crypto.randomBytes(16).toString('hex');
                 const token = jwt.sign({ token: randomToken }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-                // Buscar dados do usuário na Firestore
+                // Buscar dados do usuário na Firestore 
                 const userId = decodedToken.uid;
                 const userDoc = await this.usersCollectionRef.doc(userId).get();
 
@@ -74,7 +74,7 @@ class Users {
                     email: decodedToken.email,
                     uid: decodedToken.uid
                 };
-                
+
                 return { token, userData };
             } else {
                 throw new Error('Token inválido');
@@ -82,6 +82,15 @@ class Users {
         } catch (error) {
             console.error('Erro ao verificar o ID Token:', error);
             throw error;
+        }
+    }
+    async getUserById(userId) {
+        try {
+            const userDoc = await this.usersCollectionRef.doc(userId).get();
+            return userDoc;
+        } catch (error) {
+            console.error('Erro ao obter usuário:', error);
+            throw new Error('Erro ao obter usuário');
         }
     }
 }

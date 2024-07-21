@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { createUser, login, addSecurityQuestion, removeSecurityQuestion, listSecurityQuestions } = require('../controllers/authController');
+const verificateToken = require('./src/middlewares/validateToken');
+const { createUser, login, logout, addSecurityQuestion, removeSecurityQuestion, listSecurityQuestions } = require('../controllers/authController');
 
 router.route("/create-user")
     .post(createUser);
@@ -8,9 +9,12 @@ router.route("/create-user")
 router.route("/auth")
     .post(login);
 
+router.route("/logout")
+    .post(verificateToken, logout);
+
 router.route('/question')
-    .post(addSecurityQuestion)
-    .delete(removeSecurityQuestion)
-    .get(listSecurityQuestions)
+    .post(verificateToken, addSecurityQuestion)
+    .delete(verificateToken, removeSecurityQuestion)
+    .get(verificateToken, listSecurityQuestions)
     
 module.exports = router;

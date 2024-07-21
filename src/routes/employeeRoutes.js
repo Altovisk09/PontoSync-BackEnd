@@ -1,16 +1,17 @@
 const express = require('express');
 const router = express.Router();
+const verificateToken = require('./src/middlewares/validateToken');
 const { addEmployee, updateEmployee, deleteEmployee, listEmployees, getEmployee } = require('../controllers/employeeController');
 
 router.route('/')
-    .get(listEmployees)
-    .post(addEmployee)
+    .get(verificateToken, listEmployees)
+    .post(verificateToken, addEmployee)
 
 router.route('/:employeeId')    
-    .put(updateEmployee)
-    .delete(deleteEmployee)
+    .put(verificateToken, updateEmployee)
+    .delete(verificateToken, deleteEmployee)
 
 router.route('/employee')
-    .get(getEmployee)
+    .get(verificateToken, getEmployee)
 
 module.exports = router;

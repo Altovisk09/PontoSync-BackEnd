@@ -1,5 +1,6 @@
 const Users = require('../models/Users');
 const SecurityQuestions = require('../models/SecurityQuestions');
+const jwt = require('jsonwebtoken');
 
 async function createUser(req, res) {
     const { name, last_name, email, password, phone_number, security_question, response } = req.body;
@@ -14,12 +15,35 @@ async function createUser(req, res) {
 }
 async function login(req, res) {
     const user = new Users();
-    const { idToken } = req.body;
+    const { idToken, rememberMe } = req.body;
     try {
         const { token, userData } = await user.login(idToken);
-        res.status(200).json({ token, userData });
+
+        if (rememberMe) {
+            res.cookie('jwt', token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                maxAge: 1000 * 60 * 60 * 24 * 30,
+            });
+        } else {
+            res.cookie('jwt', token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+            });
+        }
+
+        res.status(200).json({ userData });
     } catch (error) {
         res.status(401).send({ message: 'Erro ao autenticar usuário', error: error.message });
+    }
+}
+
+async function logout(req, res) {
+    try {
+        res.cookie('jwt', '', { maxAge: 1 }); 
+        res.status(200).send('Logout realizado com sucesso');
+    } catch (error) {
+        res.status(500).send('Erro ao realizar logout');
     }
 }
 
@@ -62,6 +86,7 @@ async function listSecurityQuestions(req, res) {
 module.exports = {
     createUser,
     login,
+    logout,
     addSecurityQuestion,
     removeSecurityQuestion,
     listSecurityQuestions
