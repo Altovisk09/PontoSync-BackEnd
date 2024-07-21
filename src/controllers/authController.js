@@ -23,7 +23,6 @@ async function login(req, res) {
             secure: process.env.NODE_ENV === 'production',
             maxAge: rememberMe ? 1000 * 60 * 60 * 24 * 30 : 1000 * 60 * 60,
             sameSite: 'Lax',
-            domain: 'localhost'
         });
 
         res.status(200).json({ userData });
