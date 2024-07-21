@@ -1,8 +1,9 @@
 const { getAuth } = require("firebase-admin/auth");
 const { getFirestore } = require('firebase-admin/firestore');
 const jwt = require('jsonwebtoken');
-const CryptoJS = require('crypto-js');
 const dotenv = require("dotenv");
+const { encrypt } = require('../utils/crypto');
+const crypto = require('crypto');
 
 dotenv.config();
 
@@ -57,27 +58,29 @@ class Users {
     async login(idToken) {
         try {
             const decodedToken = await getAuth().verifyIdToken(idToken);
-            console.log('decoded token '+decodedToken)
+            console.log('decoded token', decodedToken);
+    
             if (decodedToken) {
-                const randomToken = CryptoJS.lib.WordArray.random(16).toString();
+                const randomToken = crypto.randomBytes(16).toString('hex');
                 const token = jwt.sign({ token: randomToken }, process.env.JWT_SECRET, { expiresIn: '1h' });
-
+    
                 const userId = decodedToken.uid;
                 const userDoc = await this.usersCollectionRef.doc(userId).get();
-
+    
                 if (!userDoc.exists) {
                     throw new Error('Usuário não encontrado');
                 }
-
+    
                 const userData = {
                     ...userDoc.data(),
                     email: decodedToken.email,
                 };
-
-                const encryptedUserId = CryptoJS.AES.encrypt(userId, process.env.CRYPTO_SECRET).toString();
-                console.log('criptografado'+encryptedUserId)
+    
+                const encryptedUserId = encrypt(userId);
+                console.log('criptografado', encryptedUserId);
+    
                 const combinedToken = `${token}:${encryptedUserId}`;
-
+    
                 return { combinedToken, userData };
             } else {
                 throw new Error('Token inválido');
@@ -86,7 +89,7 @@ class Users {
             console.error('Erro ao verificar o ID Token:', error);
             throw error;
         }
-    }
+    }    
     async getUserById(userId) {
         try {
             const userDoc = await this.usersCollectionRef.doc(userId).get();
