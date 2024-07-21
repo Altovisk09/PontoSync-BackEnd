@@ -4,6 +4,6 @@ const verificateToken = require('../middlewares/validateToken');
 const { getUser } = require('../controllers/userController');
 
 router.route('/')
-    .get(verificateToken, getUser);
+    .get(getUser);
 
 module.exports = router;
