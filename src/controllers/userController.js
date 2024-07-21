@@ -1,8 +1,17 @@
 const Users = require('../models/Users');
+const CryptoJS = require('crypto-js');
+const { getAuth } = require('firebase-admin/auth');
 
 async function getUser(req, res) {
     try {
-        const userId = req.user.token; 
+        const { encryptedUserId, jwtToken } = req.user;
+
+        const bytes = CryptoJS.AES.decrypt(encryptedUserId, process.env.CRYPTO_SECRET);
+        const userId = bytes.toString(CryptoJS.enc.Utf8);
+
+        const userRecord = await getAuth().getUser(userId);
+        const email = userRecord.email;
+
         const user = new Users();
         const userDoc = await user.getUserById(userId);
 
@@ -12,7 +21,7 @@ async function getUser(req, res) {
 
         const userData = {
             ...userDoc.data(),
-            uid: userId
+            email,
         };
 
         res.status(200).json({ userData });
@@ -22,4 +31,4 @@ async function getUser(req, res) {
     }
 }
 
-module.exports = { getUser };
+module.exports={ getUser }

@@ -1,7 +1,7 @@
 const { getAuth } = require("firebase-admin/auth");
 const { getFirestore } = require('firebase-admin/firestore');
 const jwt = require('jsonwebtoken');
-const crypto = require('crypto');
+const CryptoJS = require('crypto-js');
 const dotenv = require("dotenv");
 
 dotenv.config();
@@ -58,10 +58,9 @@ class Users {
         try {
             const decodedToken = await getAuth().verifyIdToken(idToken);
             if (decodedToken) {
-                const randomToken = crypto.randomBytes(16).toString('hex');
+                const randomToken = CryptoJS.lib.WordArray.random(16).toString();
                 const token = jwt.sign({ token: randomToken }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-                // Buscar dados do usuário na Firestore 
                 const userId = decodedToken.uid;
                 const userDoc = await this.usersCollectionRef.doc(userId).get();
 
@@ -72,10 +71,13 @@ class Users {
                 const userData = {
                     ...userDoc.data(),
                     email: decodedToken.email,
-                    uid: decodedToken.uid
                 };
 
-                return { token, userData };
+                const encryptedUserId = CryptoJS.AES.encrypt(userId, process.env.CRYPTO_SECRET).toString();
+
+                const combinedToken = `${token}:${encryptedUserId}`;
+
+                return { combinedToken, userData };
             } else {
                 throw new Error('Token inválido');
             }

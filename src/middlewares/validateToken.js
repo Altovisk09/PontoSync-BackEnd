@@ -1,20 +1,33 @@
 const jwt = require('jsonwebtoken');
 
-const validateToken = (req, res, next) => {
-    const token = req.cookies.jwt;
-
-    if (!token) {
-        return res.status(401).send('Token não fornecido');
-    }
-
-    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-        if (err) {
-            return res.status(401).send('Token inválido');
+function authMiddleware(req, res, next) {
+    try {
+        const token = req.cookies.jwt;
+        if (!token) {
+            return res.status(401).json({ message: 'Acesso não autorizado' });
         }
 
-        req.user = decoded;
-        next();
-    });
-};
+        const [jwtToken, encryptedUserId] = token.split(':');
+        if (!jwtToken || !encryptedUserId) {
+            return res.status(401).json({ message: 'Token inválido' });
+        }
 
-module.exports = validateToken;
+        try {
+            jwt.verify(jwtToken, process.env.JWT_SECRET);
+        } catch (error) {
+            return res.status(401).json({ message: 'Token JWT inválido' });
+        }
+
+        req.user = {
+            encryptedUserId: encryptedUserId,
+            jwtToken: jwtToken,
+        };
+
+        next();
+    } catch (error) {
+        console.error('Erro no middleware de autenticação:', error);
+        res.status(500).json({ message: 'Erro interno do servidor' });
+    }
+}
+
+module.exports = authMiddleware;

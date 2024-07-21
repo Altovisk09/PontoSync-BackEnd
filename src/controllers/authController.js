@@ -1,6 +1,5 @@
 const Users = require('../models/Users');
 const SecurityQuestions = require('../models/SecurityQuestions');
-const jwt = require('jsonwebtoken');
 
 async function createUser(req, res) {
     const { name, last_name, email, password, phone_number, security_question, response } = req.body;
@@ -17,20 +16,13 @@ async function login(req, res) {
     const user = new Users();
     const { idToken, rememberMe } = req.body;
     try {
-        const { token, userData } = await user.login(idToken);
+        const { combinedToken, userData } = await user.login(idToken);
 
-        if (rememberMe) {
-            res.cookie('jwt', token, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                maxAge: 1000 * 60 * 60 * 24 * 30,
-            });
-        } else {
-            res.cookie('jwt', token, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-            });
-        }
+        res.cookie('jwt', combinedToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            maxAge: rememberMe ? 1000 * 60 * 60 * 24 * 30 : 1000 * 60 * 60,
+        });
 
         res.status(200).json({ userData });
     } catch (error) {
