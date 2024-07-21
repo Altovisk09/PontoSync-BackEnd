@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const verificateToken = require('./src/middlewares/validateToken');
+const verificateToken = require('../middlewares/validateToken');
 const { createUser, login, logout, addSecurityQuestion, removeSecurityQuestion, listSecurityQuestions } = require('../controllers/authController');
 
 router.route("/create-user")
