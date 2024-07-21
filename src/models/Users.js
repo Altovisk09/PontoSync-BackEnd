@@ -55,50 +55,50 @@ class Users {
         }
     }
 
-    async login(idToken) {
-        try {
-            const decodedToken = await getAuth().verifyIdToken(idToken);
-            console.log('decoded token', decodedToken);
-    
-            if (decodedToken) {
-                const randomToken = crypto.randomBytes(16).toString('hex');
-                const token = jwt.sign({ token: randomToken }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    
-                const userId = decodedToken.uid;
-                const userDoc = await this.usersCollectionRef.doc(userId).get();
-    
-                if (!userDoc.exists) {
-                    throw new Error('Usuário não encontrado');
+        async login(idToken) {
+            try {
+                const decodedToken = await getAuth().verifyIdToken(idToken);
+                console.log('decoded token', decodedToken);
+        
+                if (decodedToken) {
+                    const randomToken = crypto.randomBytes(16).toString('hex');
+                    const token = jwt.sign({ token: randomToken }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        
+                    const userId = decodedToken.uid;
+                    const userDoc = await this.usersCollectionRef.doc(userId).get();
+        
+                    if (!userDoc.exists) {
+                        throw new Error('Usuário não encontrado');
+                    }
+        
+                    const userData = {
+                        ...userDoc.data(),
+                        email: decodedToken.email,
+                    };
+        
+                    const encryptedUserId = encrypt(userId);
+                    console.log('criptografado', encryptedUserId);
+        
+                    const combinedToken = `${token}:${encryptedUserId}`;
+        
+                    return { combinedToken, userData };
+                } else {
+                    throw new Error('Token inválido');
                 }
-    
-                const userData = {
-                    ...userDoc.data(),
-                    email: decodedToken.email,
-                };
-    
-                const encryptedUserId = encrypt(userId);
-                console.log('criptografado', encryptedUserId);
-    
-                const combinedToken = `${token}:${encryptedUserId}`;
-    
-                return { combinedToken, userData };
-            } else {
-                throw new Error('Token inválido');
+            } catch (error) {
+                console.error('Erro ao verificar o ID Token:', error);
+                throw error;
             }
-        } catch (error) {
-            console.error('Erro ao verificar o ID Token:', error);
-            throw error;
-        }
-    }    
-    async getUserById(userId) {
-        try {
-            const userDoc = await this.usersCollectionRef.doc(userId).get();
-            return userDoc;
-        } catch (error) {
-            console.error('Erro ao obter usuário:', error);
-            throw new Error('Erro ao obter usuário');
+        }    
+        async getUserById(userId) {
+            try {
+                const userDoc = await this.usersCollectionRef.doc(userId).get();
+                return userDoc;
+            } catch (error) {
+                console.error('Erro ao obter usuário:', error);
+                throw new Error('Erro ao obter usuário');
+            }
         }
     }
-}
 
 module.exports = Users;
