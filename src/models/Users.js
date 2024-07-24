@@ -58,11 +58,10 @@ class Users {
         async login(idToken) {
             try {
                 const decodedToken = await getAuth().verifyIdToken(idToken);
-                console.log('decoded token', decodedToken);
         
                 if (decodedToken) {
-                    const randomToken = crypto.randomBytes(16).toString('hex');
-                    const token = jwt.sign({ token: randomToken }, process.env.JWT_SECRET, { expiresIn: '1h' });
+                    // const randomToken = crypto.randomBytes(16).toString('hex');
+                    const token = jwt.sign({ token: idToken }, process.env.JWT_SECRET, { expiresIn: '1h' });
         
                     const userId = decodedToken.uid;
                     const userDoc = await this.usersCollectionRef.doc(userId).get();
