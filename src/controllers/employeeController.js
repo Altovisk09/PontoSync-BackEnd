@@ -4,8 +4,9 @@ const addEmployee = async (req, res) => {
     try {
         const employeeManager = new EmployeeManager();
         const employeeData = req.body;
-        const newEmployee = await employeeManager.addEmployee(employeeData);
-        res.json(newEmployee);
+        await employeeManager.addEmployee(req, employeeData); // Não precisa armazenar o retorno
+
+        res.status(200).send('Operação concluída');
     } catch (error) {
         console.error('Erro ao adicionar funcionário:', error);
         res.status(500).json({ error: 'Erro ao adicionar funcionário.' });
@@ -72,4 +73,45 @@ const getEmployee = async (req, res) => {
     }
 };
 
-module.exports = { addEmployee, updateEmployee, deleteEmployee, listEmployees, getEmployee };
+const getEmployeesByIds = async (req, res) => {
+    try {
+        const employeeManager = new EmployeeManager();
+        const employeeIds = req.user.reps; // Assume que req.user.reps é um array de IDs
+        const employees = await employeeManager.getEmployeesByIds(employeeIds);
+        if (employees.length > 0) {
+            res.json(employees);
+        } else {
+            res.status(404).json({ error: 'Nenhum funcionário encontrado.' });
+        }
+    } catch (error) {
+        console.error('Erro ao obter funcionários:', error);
+        res.status(500).json({ error: 'Erro ao obter funcionários.' });
+    }
+};
+
+
+const getEmployeesByTeamLeader = async (req, res) => {
+    try {
+        const employeeManager = new EmployeeManager();
+        const { encryptedUserId } = req.user;
+        const userId = decrypt(encryptedUserId);
+        const employees = await employeeManager.getEmployeesByTeamLeader(userId);
+        if (employees) {
+            res.json(employees);
+        } else {
+            res.status(404).json({ error: 'Funcionários não encontrados.' });
+        }
+    } catch (error) {
+        console.error('Erro ao obter funcionário:', error);
+        res.status(500).json({ error: 'Erro ao obter funcionário.' });
+    }
+}
+module.exports = {
+    addEmployee,
+    updateEmployee,
+    deleteEmployee,
+    listEmployees,
+    getEmployee,
+    getEmployeesByIds,
+    getEmployeesByTeamLeader
+};

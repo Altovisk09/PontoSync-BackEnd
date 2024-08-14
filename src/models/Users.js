@@ -3,7 +3,6 @@ const { getFirestore } = require('firebase-admin/firestore');
 const jwt = require('jsonwebtoken');
 const dotenv = require("dotenv");
 const { encrypt } = require('../utils/crypto');
-const crypto = require('crypto');
 
 dotenv.config();
 
