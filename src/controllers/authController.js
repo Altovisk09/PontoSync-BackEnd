@@ -19,10 +19,10 @@ async function login(req, res) {
         const { combinedToken, userData } = await user.login(idToken);
 
         res.cookie('jwt', combinedToken, {
-            httpOnly: true,
+            httpOnly: process.env.NODE_ENV === 'production' ? true : false,
             secure: process.env.NODE_ENV === 'production',
             maxAge: rememberMe ? 1000 * 60 * 60 * 24 * 30 : 1000 * 60 * 60,
-            sameSite: 'none',
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'Lax',
         });
 
         res.status(200).json({ userData });

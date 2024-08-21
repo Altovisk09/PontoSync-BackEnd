@@ -1,10 +1,23 @@
+const processExtractedText = require('../utils/pdfExtract')
 const EmployeeManager = require('../models/Employees');
+const path = require('path');
+const fs = require('fs')
 
 const addEmployee = async (req, res) => {
     try {
         const employeeManager = new EmployeeManager();
-        const employeeData = req.body;
-        await employeeManager.addEmployee(req, employeeData); // Não precisa armazenar o retorno
+        
+        if (!req.file) {
+            return res.status(400).json({ error: 'Nenhum arquivo foi enviado.' });
+        }
+
+        const filePath = path.join(__dirname, '../uploads', req.file.filename);
+        const employeeData = await processExtractedText(filePath);
+
+        await employeeManager.addEmployee(req, employeeData);
+
+        
+        fs.unlinkSync(filePath);
 
         res.status(200).send('Operação concluída');
     } catch (error) {
@@ -76,7 +89,7 @@ const getEmployee = async (req, res) => {
 const getEmployeesByIds = async (req, res) => {
     try {
         const employeeManager = new EmployeeManager();
-        const employeeIds = req.user.reps; // Assume que req.user.reps é um array de IDs
+        const employeeIds = req.user.repsId; // Assume que req.user.reps é um array de IDs
         const employees = await employeeManager.getEmployeesByIds(employeeIds);
         if (employees.length > 0) {
             res.json(employees);

@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const upload = require('../config/multer/config');
 const verificateToken = require('../middlewares/validateToken');
 const { addEmployee, 
     updateEmployee, 
@@ -11,7 +12,7 @@ const { addEmployee,
 
 router.route('/')
     .get(verificateToken, getEmployeesByIds)
-    .post(verificateToken, addEmployee)
+    .post(verificateToken, upload.single('file'), addEmployee)
 
 router.route('/:employeeId')    
     .put(verificateToken, updateEmployee)

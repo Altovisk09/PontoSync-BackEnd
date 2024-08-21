@@ -20,7 +20,7 @@ class EmployeeManager {
 
             await EmployeeRef.set({
                 teamLeader: userId,
-                agencie: employeeData.agencia,
+                agencie: employeeData.agencie,
                 nome: employeeData.nome ,
                 pis: employeeData.pis,
                 cpf: employeeData.cpf,
