@@ -10,6 +10,8 @@ const uploadsDir = isProduction ? '/tmp/uploads' : path.join(__dirname, '../uplo
 
 const addEmployee = async (req, res) => {
     try {
+        const employeeManager = new EmployeeManager();
+
         if (!req.file) {
             return res.status(400).json({ error: 'Nenhum arquivo foi enviado.' });
         }
@@ -19,10 +21,15 @@ const addEmployee = async (req, res) => {
 
         const employeeData = await processExtractedText(filePath);
 
+        // Use a instância de employeeManager para adicionar o funcionário
         await employeeManager.addEmployee(req, employeeData);
 
         if (!isProduction) {
-          fs.unlinkSync(filePath);
+          try {
+            fs.unlinkSync(filePath);
+          } catch (err) {
+            console.error('Erro ao deletar o arquivo:', err);
+          }
         }
 
         res.status(200).send('Operação concluída');
@@ -31,6 +38,7 @@ const addEmployee = async (req, res) => {
         res.status(500).json({ error: 'Erro ao adicionar funcionário.' });
     }
 };
+
 
 const updateEmployee = async (req, res) => {
     try {
