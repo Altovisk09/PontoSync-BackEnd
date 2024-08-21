@@ -3,6 +3,11 @@ const EmployeeManager = require('../models/Employees');
 const path = require('path');
 const fs = require('fs')
 
+const isProduction = process.env.NODE_ENV === 'production';
+
+// Define o diretório de uploads apropriado com base no ambiente
+const uploadsDir = isProduction ? '/tmp/uploads' : path.join(__dirname, '../uploads');
+
 const addEmployee = async (req, res) => {
     try {
         const employeeManager = new EmployeeManager();
@@ -11,13 +16,14 @@ const addEmployee = async (req, res) => {
             return res.status(400).json({ error: 'Nenhum arquivo foi enviado.' });
         }
 
-        const filePath = path.join(__dirname, '../uploads', req.file.filename);
+        const filePath = path.join(uploadsDir, req.file.filename);
         const employeeData = await processExtractedText(filePath);
 
         await employeeManager.addEmployee(req, employeeData);
 
-        
-        fs.unlinkSync(filePath);
+        if (!isProduction) {
+          fs.unlinkSync(filePath);
+        }
 
         res.status(200).send('Operação concluída');
     } catch (error) {
