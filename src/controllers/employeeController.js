@@ -10,13 +10,13 @@ const uploadsDir = isProduction ? '/tmp/uploads' : path.join(__dirname, '../uplo
 
 const addEmployee = async (req, res) => {
     try {
-        const employeeManager = new EmployeeManager();
-        
         if (!req.file) {
             return res.status(400).json({ error: 'Nenhum arquivo foi enviado.' });
         }
 
         const filePath = path.join(uploadsDir, req.file.filename);
+        console.log(`Arquivo sendo processado: ${filePath}`);
+
         const employeeData = await processExtractedText(filePath);
 
         await employeeManager.addEmployee(req, employeeData);
