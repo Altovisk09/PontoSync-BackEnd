@@ -103,7 +103,7 @@ const getEmployee = async (req, res) => {
 const getEmployeesByIds = async (req, res) => {
     try {
         const employeeManager = new EmployeeManager();
-        const employeeIds = req.user.repsId; // Assume que req.user.reps é um array de IDs
+        const employeeIds = req.body.repsId;
         const employees = await employeeManager.getEmployeesByIds(employeeIds);
         if (employees.length > 0) {
             res.json(employees);

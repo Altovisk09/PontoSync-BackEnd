@@ -73,10 +73,7 @@ class Users {
                         ...userDoc.data(),
                         email: decodedToken.email,
                     };
-        
                     const encryptedUserId = encrypt(userId);
-                    console.log('criptografado', encryptedUserId);
-        
                     const combinedToken = `${token}:${encryptedUserId}`;
         
                     return { combinedToken, userData };

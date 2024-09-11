@@ -25,6 +25,7 @@ class EmployeeManager {
                 pis: employeeData.pis,
                 cpf: employeeData.cpf,
                 admissao: employeeData.admissao,
+                dataEmissao: employeeData.dataEmissao,
                 departamento: employeeData.departamento,
                 cargo: employeeData.cargo,
                 horasMensais: employeeData.horasMensais,
@@ -85,7 +86,7 @@ class EmployeeManager {
                 const employeeDoc = await this.employeeCollectionRef.doc(employeeId).get();
                 if (employeeDoc.exists) {
                     const employeeData = employeeDoc.data();
-                    const { timeEntries, ...employeeInfo } = employeeData; // Exclui timeEntries
+                    const { timeEntries, ...employeeInfo } = employeeData; 
                     employees.push({ id: employeeId, ...employeeInfo });
                 }
             }

@@ -4,6 +4,9 @@ const pdf = require('pdf-parse');
 // Regex para verificar o CNPJ
 const cnpjRegex = /CNPJ:\s*03\.573\.863\/0001-46/;
 
+// Regex para a Data de Emissão
+const dataEmissaoRegex = /Data de emissão\s*(\d{2}\/\d{2}\/\d{4})/;
+
 async function readPDF(filepath) {
     try {
         const dataBuffer = fs.readFileSync(filepath);
@@ -81,6 +84,10 @@ function extractEmployeeData(text) {
 
     const additionalData = extractAdditionalData(text);
     Object.assign(employeeData, additionalData);
+
+    // Extraindo a data de emissão
+    const dataEmissaoMatch = dataEmissaoRegex.exec(text);
+    employeeData.dataEmissao = dataEmissaoMatch ? dataEmissaoMatch[1] : null;
 
     // Remove chaves vazias
     for (const key in employeeData) {
