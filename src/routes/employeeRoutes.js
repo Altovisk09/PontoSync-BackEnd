@@ -17,10 +17,11 @@ router.route('/upload')
     .post(verificateToken, upload.single('file'), addEmployee)
 
 router.route('/:employeeId')
+    .get(verificateToken, getEmployee)
     .put(verificateToken, updateEmployee)
     .delete(verificateToken, deleteEmployee)
 
-router.route('/employee')
+router.route('/employee/:id')
     .get(verificateToken, getEmployee)
 
 router.route('/all')

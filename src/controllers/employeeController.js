@@ -88,7 +88,7 @@ const getEmployee = async (req, res) => {
     try {
         const employeeManager = new EmployeeManager();
         const { employeeId } = req.params;
-        const employee = await employeeManager.getEmployee(employeeId);
+        const employee = await employeeManager.getEmployeeById(employeeId);
         if (employee) {
             res.json(employee);
         } else {
