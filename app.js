@@ -12,7 +12,7 @@
         initializeFirebase();
 
         const corsOptions = {
-            origin: ['http://localhost:5173', 'https://ponto-sync-front-end.vercel.app'],
+            origin: ['http://localhost:5173', 'https://pontosync.vercel.app'],
             credentials: true,
         };
         
